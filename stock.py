@@ -71,15 +71,7 @@ def show():
     plt.clf()
                 
 def main():
-    hut = Stock('amd')
-    aapl = Stock('aapl')
-    print(hut, aapl)
-    # print(aapl.get_returns_simple())
-    # print(aapl.get_returns_log())
-    print(f'{hut} returned an average of {100 * hut.simple_mean:.5f}%')
-    print(f'{hut} returned an average of {100 * hut.log_mean:.5f}% per period which is a total of {100 * sum(hut.log_returns)}%')
-    # print(hut.gains())
-    aapl.dist_log()
+    pass
 
 if __name__ == '__main__':
     main()
