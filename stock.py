@@ -70,8 +70,5 @@ def show():
     plt.show()
     plt.clf()
                 
-def main():
-    pass
-
 if __name__ == '__main__':
-    main()
+    pass
