@@ -117,7 +117,9 @@ To load a portfolio from file, input '/' before user. (/user)
             cmd = input('\nFinalyze Command>> ').lower()
         except Exception as e:
             if user.lower() == 'debug': print(e)
-            else: print('Something went wrong, please try again.')
+            else:
+                print('Something went wrong, please try again.')
+                break
     print(f'\nThanks for using Finalyze, {p.user}!\n')
 
 if __name__ == '__main__':
