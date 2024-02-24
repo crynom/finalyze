@@ -1,8 +1,8 @@
 # from crynom.wrappers import timer
+import pandas as pd
 from stock import Stock, show
 import matplotlib.pyplot as plt
 from mean_var import optimal_portfolio, return_portfolios
-import pandas_datareader as web
 import datetime as dt
 import numpy as np
 from scipy.stats import kurtosis, skew
@@ -77,10 +77,12 @@ class Portfolio():
     # @timer       
     def refresh(self):
         self.value = 0
+        self.data = pd.DataFrame()
+        for stock in self.stocks:
+            self.data[stock.ticker] = stock.clos
         for stock in self.stocks:
             stock.value = stock.price * stock.shares
             self.value += stock.value
-            self.data = web.get_data_yahoo(self.stocks, dt.datetime.today() - dt.timedelta(days = 365), dt.datetime.today())['Close']
             self.weights = self.get_weights()
             if len(self.stocks) > 1:
                 self.e_opt, self.v_opt, self.s_opt = self.optimal()
@@ -125,8 +127,7 @@ Portfolio user: {self.user}
 
     # @timer
     def optimal(self):
-        selected = list(self.data)
-        period = np.log(self.data[selected]/self.data[selected].shift(1)).dropna()
+        period = np.log(self.data/self.data.shift(1)).dropna()
         weights, _, _, _ = optimal_portfolio(period[1:])
         for weight, stock in zip(weights, self.stocks):
             stock.optweight = weight
@@ -321,4 +322,10 @@ __________________________
 
 
 if __name__ == '__main__':
+
+
+    p = Portfolio('Test')
+    p.add_stock('AAPL', 10)
+    p.add_stock('AMD', 5)
+    print(p.data)
     pass

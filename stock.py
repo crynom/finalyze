@@ -1,8 +1,11 @@
-import pandas_datareader as web
+import warnings
+import yfinance as yf
 import datetime as dt
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import kurtosis, skew
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 class Stock:
 
@@ -25,11 +28,11 @@ class Stock:
         return str(self.ticker)
 
     def get_price(self, delta = 365):
-        end = dt.datetime.today()
-        start = end - dt.timedelta(days=delta)
+        start = dt.datetime.today() - dt.timedelta(days=delta)
         try:
-            clos = web.get_data_yahoo(self.ticker,start,end)['Close']
-            price = clos[-1]
+            self.YFTICKER = yf.Ticker(self.ticker)
+            clos = self.YFTICKER.history(self.ticker,start=start)['Close']
+            price = round(clos.iloc[-1], 2)
             return price, clos
         except:
             print('\nInvalid ticker')
@@ -48,7 +51,7 @@ class Stock:
     
     def gains(self, delta = 365):
         _, close = self.get_price(delta)
-        return close[-1]-close[0]
+        return close.iloc[-1]-close.iloc[0]
 
     def dist_log(self, delta = 365):
         if delta != 365:
@@ -71,4 +74,10 @@ def show():
     plt.clf()
                 
 if __name__ == '__main__':
+    
+    aapl = yf.Ticker('AAPL')
+    # print(aapl.history(start='2020-01-01'))
+    stock = Stock('AAPL')
+    print(stock.price)
+    print(aapl.history(period='1mo').Close)
     pass

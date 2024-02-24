@@ -14,7 +14,7 @@ def return_portfolios(expected_returns, cov_matrix):
     num_assets = len(selected) 
     num_portfolios = 5000
     
-    for single_portfolio in range(num_portfolios):
+    for _ in range(num_portfolios):
         weights = np.random.random(num_assets)
         weights /= np.sum(weights)
         returns = np.dot(weights, expected_returns)

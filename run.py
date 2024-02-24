@@ -112,9 +112,12 @@ To load a portfolio from file, input '/' before user. (/user)
         p = Portfolio(user.title())
     cmd = input('\nFinalyze Command>> ').lower()
     while cmd != 'exit':
-        p = driver(p, cmd)
-        cmd = input('\nFinalyze Command>> ').lower()
-        
+        try:
+            p = driver(p, cmd)
+            cmd = input('\nFinalyze Command>> ').lower()
+        except Exception as e:
+            if user.lower() == 'debug': print(e)
+            else: print('Something went wrong, please try again.')
     print(f'\nThanks for using Finalyze, {p.user}!\n')
 
 if __name__ == '__main__':
