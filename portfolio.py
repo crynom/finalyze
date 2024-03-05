@@ -303,6 +303,54 @@ __________________________
                 print(self.add_stock(stock[0], float(stock[1]), price = None, load = True, worth = float(stock[2])))
         print(f"\nLoaded {loadfrom}.csv to {self.user}'s portfolio")
 
+    
+    def monteCarlo(self, simulations: int = 50, days: int = 365, splitAssets: bool = False):
+        mu = self.returns.mean() / 365
+        sigma = self.returns.std()
+        day_return = np.random.normal(loc=mu, scale=sigma)
+        sims = []
+        if splitAssets:
+            while simulations > 0:
+                sim = [0] * days
+                for stock in self.stocks:
+                    mu = stock.log_mean
+                    sigma = stock.log_returns.std()
+                    simStock = [stock.clos[0] * self.shares[self.tix.index(stock.ticker)]]
+                    for i in range(days):
+                        sim[i] += simStock[-1]
+                        day_return = np.random.normal(loc=mu, scale=sigma)
+                        simStock.append(simStock[-1] * (1 + day_return))
+                sims.append(sim)
+                # if simulations % 5 == 0: print(simulations)
+                simulations -= 1
+        else:
+            while simulations > 0:
+                sim = [self.value]
+                for _ in range(days):
+                    day_return = np.random.normal(loc=mu, scale=sigma)
+                    sim.append(sim[-1] * (1 + day_return))
+                sims.append(sim)
+                # if simulations % 5 == 0: print(simulations)
+                simulations -= 1
+        fig, ax = plt.subplots()
+        fig.canvas.manager.set_window_title('FINALYZE: MONTE CARLO SIM')
+        ax.set_title(f'Monte Carlo Sim for {len(sims)} trials')
+        # print(sims)
+        for s in sims:
+                ax.plot(s)
+                ax.set_xlabel('Days')
+                ax.set_ylabel('Portfolio Value')
+                # y_min = (int(.85 * min([min(sims[column]) for column in sims.columns])) // 500) * 500
+                # ax.set_yticks(np.arange(y_min, 1.1 * max([max(sims[column]) for column in sims.columns]), step=250), minor=True)
+                ax.grid(visible=True, which='both', axis='y')
+                ax.grid(visible=True, which='major', axis='x')
+                ax.ticklabel_format(useOffset=False, style='plain')
+        show()
+
+
+
+
+
 
 
 
@@ -325,7 +373,29 @@ if __name__ == '__main__':
 
 
     p = Portfolio('Test')
-    p.add_stock('AAPL', 10)
-    p.add_stock('AMD', 5)
-    print(p.data)
+
+    stocks = {
+        'QQQ':5.544,
+        'VOO':5.074,
+        'AMD':13.1,
+        'INTC':50.962,
+        'INDA':39.063,
+        'IWM':8.578,
+        'GOGL':81.424,
+        'HUT':116.785,
+        'NVDA':1,
+        'LIT':13.122,
+        'XYLD':7,
+        'XOM':2.283,
+        'COIN':.866,
+        'RTX':1.026,
+        'LMT':.212,
+        'TSM':.474,
+        'SBUX':.36
+    }
+    for stock, shares in stocks.items():
+        p.add_stock(stock, shares)
+        print(f'added {stock}')
+    print(p)
+    p.monteCarlo(splitAssets=True, days = 365 * 2, simulations=200)
     pass

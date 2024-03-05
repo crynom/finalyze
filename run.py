@@ -1,4 +1,8 @@
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 from portfolio import Portfolio
+
 
 def driver(p, cmd):
     split = cmd.split(' ')
@@ -43,6 +47,10 @@ def driver(p, cmd):
                     p.plot_portfolio_logdist()
                 else:
                     print('Command not recognized\n')
+            elif split[1] == 'mc':
+                if len(split) == 2 or len(split == 3 and '-s' in split): p.monteCarlo(splitAssets=('-s' in split))
+                elif len(split) == 3: p.monteCarlo(days=int(split[2]), splitAssets=('-s' in split))
+                elif len(split) > 3: p.monteCarlo(days=int(split[2]), simulations=int(split[3]), splitAssets=('-s' in split))
             else:
                 print('Command not recognized\n')
         else:
@@ -57,7 +65,7 @@ def driver(p, cmd):
     elif split[0] == 'help':
         print('''
  Command (optional) [required]  | Explanation
-________________________________|________________________________
+________________________________|___________________________________________
  help                           | shows help menu
                                 |
  load [filename]                | loads portfolio
@@ -75,10 +83,14 @@ ________________________________|________________________________
  rem [stock] [shares]           | removes [shares] of [stock]
                                 | to portfolio
                                 |
- plot (ef/dist (port/stocks))   | plots price charts
-                                | (efficient frontier/
-                                |  portfolio distribution/
-                                |  stock distributions)
+ plot (ef)                      | plots price charts (efficient frontier)
+                                |
+ plot mc (days (n) (-s))        | plots Monte Carlo simulation for
+                                | [days] and [n] simulations split 
+                                | asset if [-s]
+                                |
+ plot dist (port/stocks)        | plots portfolio distribution/
+                                | stock distributions
                                 |
  print (vol [p]/optimal/gains)  | prints portfolio
                                 | (portfolio on efficient
